@@ -10,6 +10,7 @@ import (
 	"github.com/cosmos/relayer/v2/relayer"
 	"github.com/cosmos/relayer/v2/relayer/processor"
 	ibctest "github.com/strangelove-ventures/ibctest/v6"
+	"github.com/strangelove-ventures/ibctest/v6/chain/cosmos"
 	"github.com/strangelove-ventures/ibctest/v6/ibc"
 	"github.com/strangelove-ventures/ibctest/v6/testreporter"
 	"github.com/strangelove-ventures/ibctest/v6/testutil"
@@ -91,8 +92,8 @@ func TestScenarioPathFilterAllow(t *testing.T) {
 
 	// Send Transaction
 	amountToSend := int64(1_000_000)
-	gaiaDstAddress := gaiaUser.Bech32Address(osmosis.Config().Bech32Prefix)
-	osmosisDstAddress := osmosisUser.Bech32Address(gaia.Config().Bech32Prefix)
+	gaiaDstAddress := gaiaUser.(*cosmos.CosmosWallet).FormattedAddressWithPrefix(osmosis.Config().Bech32Prefix)
+	osmosisDstAddress := osmosisUser.(*cosmos.CosmosWallet).FormattedAddressWithPrefix(gaia.Config().Bech32Prefix)
 
 	gaiaHeight, err := gaia.Height(ctx)
 	require.NoError(t, err)
@@ -102,7 +103,7 @@ func TestScenarioPathFilterAllow(t *testing.T) {
 
 	var eg errgroup.Group
 	eg.Go(func() error {
-		tx, err := gaia.SendIBCTransfer(ctx, gaiaChannel.ChannelID, gaiaUser.KeyName, ibc.WalletAmount{
+		tx, err := gaia.SendIBCTransfer(ctx, gaiaChannel.ChannelID, gaiaUser.KeyName(), ibc.WalletAmount{
 			Address: gaiaDstAddress,
 			Denom:   gaia.Config().Denom,
 			Amount:  amountToSend,
@@ -120,7 +121,7 @@ func TestScenarioPathFilterAllow(t *testing.T) {
 	})
 
 	eg.Go(func() error {
-		tx, err := osmosis.SendIBCTransfer(ctx, osmosisChannel.ChannelID, osmosisUser.KeyName, ibc.WalletAmount{
+		tx, err := osmosis.SendIBCTransfer(ctx, osmosisChannel.ChannelID, osmosisUser.KeyName(), ibc.WalletAmount{
 			Address: osmosisDstAddress,
 			Denom:   osmosis.Config().Denom,
 			Amount:  amountToSend,
@@ -228,8 +229,8 @@ func TestScenarioPathFilterDeny(t *testing.T) {
 
 	// Send Transaction
 	amountToSend := int64(1_000_000)
-	gaiaDstAddress := gaiaUser.Bech32Address(osmosis.Config().Bech32Prefix)
-	osmosisDstAddress := osmosisUser.Bech32Address(gaia.Config().Bech32Prefix)
+	gaiaDstAddress := gaiaUser.(*cosmos.CosmosWallet).FormattedAddressWithPrefix(osmosis.Config().Bech32Prefix)
+	osmosisDstAddress := osmosisUser.(*cosmos.CosmosWallet).FormattedAddressWithPrefix(gaia.Config().Bech32Prefix)
 
 	gaiaHeight, err := gaia.Height(ctx)
 	require.NoError(t, err)
@@ -239,7 +240,7 @@ func TestScenarioPathFilterDeny(t *testing.T) {
 
 	var eg errgroup.Group
 	eg.Go(func() error {
-		tx, err := gaia.SendIBCTransfer(ctx, gaiaChannel.ChannelID, gaiaUser.KeyName, ibc.WalletAmount{
+		tx, err := gaia.SendIBCTransfer(ctx, gaiaChannel.ChannelID, gaiaUser.KeyName(), ibc.WalletAmount{
 			Address: gaiaDstAddress,
 			Denom:   gaia.Config().Denom,
 			Amount:  amountToSend,
@@ -263,7 +264,7 @@ func TestScenarioPathFilterDeny(t *testing.T) {
 	})
 
 	eg.Go(func() error {
-		tx, err := osmosis.SendIBCTransfer(ctx, osmosisChannel.ChannelID, osmosisUser.KeyName, ibc.WalletAmount{
+		tx, err := osmosis.SendIBCTransfer(ctx, osmosisChannel.ChannelID, osmosisUser.KeyName(), ibc.WalletAmount{
 			Address: osmosisDstAddress,
 			Denom:   osmosis.Config().Denom,
 			Amount:  amountToSend,
